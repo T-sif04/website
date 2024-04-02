@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-bottom: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        input[type="radio"] {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        input[type="submit"],
+        input[type="button"] {
+            background-color: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            display: block;
+            margin: auto;
+            width: 40%;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button-container input[type="submit"],
+        .button-container input[type="button"] {
+            width: 48%;
+            margin-top: 0;
+        }
+
+        input[type="submit"]:hover,
+        input[type="button"]:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .feedback-preview {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .feedback-preview h2 {
+            margin-top: 0;
+        }
+
+        .feedback-preview p {
+            margin-bottom: 10px;
+        }
+
+        .radio-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .radio-container label {
+            margin-right: 10px;
+        }
+
+        .improvements {
+            display: none;
+        }
+
+        input[type="radio"]:checked ~ .improvements {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Feedback Form</h1>
+
+        <form id="feedbackForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label>Is this your first time visiting?</label>
+            <div class="radio-container">
+                <input type="radio" id="firstTimeYes" name="firstTime" value="Yes">
+                <label for="firstTimeYes">Yes</label>
+                <input type="radio" id="firstTimeNo" name="firstTime" value="No">
+                <label for="firstTimeNo">No</label>
+            </div>
+
+            <label>Was the website informative and easy to navigate?</label>
+            <div class="radio-container">
+                <input type="radio" id="informativeYes" name="informative" value="Yes">
+                <label for="informativeYes">Yes</label>
+                <input type="radio" id="informativeNo" name="informative" value="No">
+                <label for="informativeNo">No</label>
+                <!-- Additional question for improvements -->
+                <div class="improvements">
+                    <label for="improvements">If no, please suggest any improvements:</label>
+                    <textarea id="improvements" name="improvements"></textarea>
+                </div>
+            </div>
+
+            <label for="satisfaction">On a scale from 1 to 10, how satisfied are you with the website?</label>
+            <input type="number" id="satisfaction" name="satisfaction" min="1" max="10" required>
+
+            <label for="additional">Do you have any additional questions or requests?</label>
+            <textarea id="additional" name="additional"></textarea>
+
+            <div class="button-container">
+                <input type="button" value="Preview" onclick="previewFeedback()">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+
+        <!-- Modal for preview -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <div class="feedback-preview" id="feedbackPreview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to display feedback preview
+        function previewFeedback() {
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var firstTime = document.querySelector('input[name="firstTime"]:checked').value;
+            var informative = document.querySelector('input[name="informative"]:checked').value;
+            var improvements = document.getElementById("improvements").value;
+            var satisfaction = document.getElementById("satisfaction").value;
+            var additional = document.getElementById("additional").value;
+
+            var previewContent = `
+                <h2>Feedback Preview</h2>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>First Time Visiting:</strong> ${firstTime}</p>
+                <p><strong>Informative and Easy to Navigate:</strong> ${informative}</p>
+                <p><strong>Improvements:</strong> ${improvements}</p>
+                <p><strong>Satisfaction Level (1-10):</strong> ${satisfaction}</p>
+                <p><strong>Additional Comments:</strong> ${additional}</p>
+            `;
+
+            document.getElementById("feedbackPreview").innerHTML = previewContent;
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        // Function to close modal
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+</body>
+</html>
